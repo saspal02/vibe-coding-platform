@@ -1,6 +1,7 @@
 package com.saswat.lovable.entity;
 
 
+import com.saswat.lovable.common.entity.BaseEntity;
 import com.saswat.lovable.enums.SubscriptionStatus;
 import lombok.AccessLevel;
 import lombok.Getter;
@@ -12,7 +13,7 @@ import java.time.Instant;
 
 @Getter
 @Setter
-public class Subscription {
+public class Subscription extends BaseEntity {
 
     private Long id;
 
@@ -28,6 +29,5 @@ public class Subscription {
     private Instant currentPeriodEnd;
     private Boolean cancelAtPeriodEnd = false;
 
-    private Instant createdAt;
-    private Instant updatedAt;
+
 }
