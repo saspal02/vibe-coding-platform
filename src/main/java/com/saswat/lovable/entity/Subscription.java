@@ -3,10 +3,8 @@ package com.saswat.lovable.entity;
 
 import com.saswat.lovable.common.entity.BaseEntity;
 import com.saswat.lovable.enums.SubscriptionStatus;
-import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.Setter;
-import lombok.experimental.FieldDefaults;
 import org.apache.catalina.User;
 
 import java.time.Instant;

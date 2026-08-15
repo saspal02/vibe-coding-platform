@@ -1,7 +1,6 @@
 package com.saswat.lovable.entity;
 
 import com.saswat.lovable.enums.ProjectRole;
-import org.apache.catalina.User;
 
 import java.time.Instant;
 

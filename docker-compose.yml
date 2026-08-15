@@ -1,0 +1,20 @@
+services:
+  postgres:
+    image: postgres:18-alpine
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: ${PSQL_USER}
+      POSTGRES_PASSWORD: ${PSQL_PASSWORD}
+      POSTGRES_DB: ${PSQL_DATABASE}
+    ports:
+      - "5432:5432"
+    volumes:
+      - lovable-postgres-data:/var/lib/postgresql
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready -U ${PSQL_USER} -d ${PSQL_DATABASE}" ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+volumes:
+  lovable-postgres-data:

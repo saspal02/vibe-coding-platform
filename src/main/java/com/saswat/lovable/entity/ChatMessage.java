@@ -1,12 +1,13 @@
 package com.saswat.lovable.entity;
 
+import com.saswat.lovable.common.entity.BaseEntity;
 import com.saswat.lovable.enums.MessageRole;
 import lombok.Getter;
 import lombok.Setter;
 
 @Getter
 @Setter
-public class ChatMessage {
+public class ChatMessage extends BaseEntity {
 
     private Long id;
     private ChatSession chatSession;

@@ -2,6 +2,7 @@ package com.saswat.lovable.controller;
 
 import com.saswat.lovable.dto.member.InviteMemberRequest;
 import com.saswat.lovable.dto.member.MemberResponse;
+import com.saswat.lovable.dto.member.UpdateMemberRoleRequest;
 import com.saswat.lovable.entity.ProjectMember;
 import com.saswat.lovable.service.ProjectMemberService;
 import lombok.RequiredArgsConstructor;
@@ -40,7 +41,7 @@ public class ProjectMemberController {
     public ResponseEntity<MemberResponse> updateMemberRole(
             @PathVariable Long projectId,
             @PathVariable Long memberId,
-            @RequestBody InviteMemberRequest request
+            @RequestBody UpdateMemberRoleRequest request
     ) {
         Long userId = 1L;
         return ResponseEntity.ok(projectMemberService.updateMemberRole(projectId, memberId, request, userId));
