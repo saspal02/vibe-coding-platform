@@ -23,7 +23,7 @@ public class User extends BaseEntity {
 
     private String email;
     private String passwordHash;
-    private String projectName;
+    private String name;
     private String avatarUrl;
 
     private Instant deletedAt; //soft delete

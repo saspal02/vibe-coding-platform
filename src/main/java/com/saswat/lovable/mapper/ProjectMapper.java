@@ -12,7 +12,5 @@ public interface ProjectMapper {
 
     ProjectResponse toProjectResponse(Project project);
 
-    ProjectSummaryResponse toProjectSummaryResponse(Project project);
-
     List<ProjectSummaryResponse> toListOfProjectSummaryResponse(List<Project> projects);
 }
