@@ -7,7 +7,12 @@ import lombok.*;
 import java.time.Instant;
 
 @Entity
-@Table(name = "projects")
+@Table(name = "projects",
+        indexes = {
+                @Index(name = "idx_projects_updated_at_desc", columnList = "updated_at DESC, deleted_at"),
+                @Index(name = "idx_projects_deleted_at_updated_at_desc", columnList = "deleted_at, updated_at DESC"),
+                @Index(name = "idx_project_deleted_at", columnList = "deleted_at")
+        })
 @Getter
 @Setter
 @AllArgsConstructor
@@ -27,5 +32,5 @@ public class Project extends BaseEntity {
     private User owner;
 
     private Boolean isPublic = false;
-    private Instant deletedAt;
+    private Instant deletedAt; // soft delete
 }

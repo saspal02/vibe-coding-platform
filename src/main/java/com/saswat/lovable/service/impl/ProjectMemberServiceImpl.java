@@ -33,18 +33,12 @@ public class ProjectMemberServiceImpl implements ProjectMemberService {
     public List<MemberResponse> getProjectMember(Long projectId, Long userId) {
         Project project = getAccessibleProjectById(projectId, userId);
 
-        List<MemberResponse> memberResponseList = new ArrayList<>();
-        memberResponseList.add(projectMemberMapper.fromProjectMember(project.getOwner()));
-
-        memberResponseList.addAll(
-                projectMemberRepository.findByIdProjectId(projectId)
+        return projectMemberRepository.findByIdProjectId(projectId)
                         .stream()
                         .map(projectMemberMapper::fromProjectMember)
-                        .toList());
-        return memberResponseList;
+                        .toList();
+
     }
-
-
 
     @Override
     public MemberResponse inviteMember(Long projectId, InviteMemberRequest request, Long userId) {
@@ -55,8 +49,7 @@ public class ProjectMemberServiceImpl implements ProjectMemberService {
             throw new RuntimeException("You are not allowed to invite members to this project");
         }
 
-        User invitee = userRepository.findByEmail(request.email())
-                .orElseThrow(() -> new RuntimeException("User not found"));
+        User invitee = userRepository.findByUsername(request.username()).orElseThrow();
 
         if (invitee.getId().equals(userId)) {
             throw new RuntimeException("Cannot invite yourself");

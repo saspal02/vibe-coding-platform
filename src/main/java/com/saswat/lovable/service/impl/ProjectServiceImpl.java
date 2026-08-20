@@ -4,8 +4,13 @@ import com.saswat.lovable.dto.project.ProjectRequest;
 import com.saswat.lovable.dto.project.ProjectResponse;
 import com.saswat.lovable.dto.project.ProjectSummaryResponse;
 import com.saswat.lovable.entity.Project;
+import com.saswat.lovable.entity.ProjectMember;
+import com.saswat.lovable.entity.ProjectMemberId;
 import com.saswat.lovable.entity.User;
+import com.saswat.lovable.enums.ProjectRole;
+import com.saswat.lovable.exception.ResourceNotFoundException;
 import com.saswat.lovable.mapper.ProjectMapper;
+import com.saswat.lovable.repository.ProjectMemberRepository;
 import com.saswat.lovable.repository.ProjectRepository;
 import com.saswat.lovable.repository.UserRepository;
 import com.saswat.lovable.service.ProjectService;
@@ -24,11 +29,14 @@ public class ProjectServiceImpl implements ProjectService {
     private final ProjectRepository projectRepository;
     private final UserRepository userRepository;
     private final ProjectMapper projectMapper;
+    private final ProjectMemberRepository projectMemberRepository;
 
     @Override
     public ProjectResponse createProject(ProjectRequest request, Long userId) {
 
-        User owner = userRepository.findById(userId).orElseThrow();
+        User owner = userRepository.findById(userId).orElseThrow(
+                () -> new ResourceNotFoundException("User", userId.toString())
+        );
 
         Project project = Project.builder()
                 .name(request.name())
@@ -36,6 +44,17 @@ public class ProjectServiceImpl implements ProjectService {
                 .isPublic(false)
                 .build();
         project = projectRepository.save(project);
+
+        ProjectMemberId projectMemberId = new ProjectMemberId(project.getId(), owner.getId());
+        ProjectMember projectMember = ProjectMember.builder()
+                .id(projectMemberId)
+                .projectRole(ProjectRole.OWNER)
+                .user(owner)
+                .acceptedAt(Instant.now())
+                .invitedAt(Instant.now())
+                .project(project)
+                .build();
+        projectMemberRepository.save(projectMember);
         return projectMapper.toProjectResponse(project);
 
     }
@@ -79,7 +98,8 @@ public class ProjectServiceImpl implements ProjectService {
 
     // INTERNAL FUNCTIONS
     public Project getAccessibleProjectById(Long projectId, Long userId) {
-        return projectRepository.findAccessibleProjectsById(projectId, userId).orElseThrow();
+        return projectRepository.findAccessibleProjectsById(projectId, userId)
+                .orElseThrow(() -> new ResourceNotFoundException("Project", projectId.toString()));
 
     }
 
