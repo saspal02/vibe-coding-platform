@@ -13,6 +13,7 @@ import com.saswat.lovable.mapper.ProjectMapper;
 import com.saswat.lovable.repository.ProjectMemberRepository;
 import com.saswat.lovable.repository.ProjectRepository;
 import com.saswat.lovable.repository.UserRepository;
+import com.saswat.lovable.security.UserContext;
 import com.saswat.lovable.service.ProjectService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -30,13 +31,17 @@ public class ProjectServiceImpl implements ProjectService {
     private final UserRepository userRepository;
     private final ProjectMapper projectMapper;
     private final ProjectMemberRepository projectMemberRepository;
+    private final UserContext userContext;
 
     @Override
-    public ProjectResponse createProject(ProjectRequest request, Long userId) {
+    public ProjectResponse createProject(ProjectRequest request) {
+        Long userId = userContext.getUserId();
 
-        User owner = userRepository.findById(userId).orElseThrow(
-                () -> new ResourceNotFoundException("User", userId.toString())
-        );
+//        User owner = userRepository.findById(userId).orElseThrow(
+//                () -> new ResourceNotFoundException("User", userId.toString())
+//        );
+
+        User owner = userRepository.getReferenceById(userId);
 
         Project project = Project.builder()
                 .name(request.name())
@@ -60,19 +65,23 @@ public class ProjectServiceImpl implements ProjectService {
     }
 
     @Override
-    public List<ProjectSummaryResponse> getUserProjects(Long userId) {
+    public List<ProjectSummaryResponse> getUserProjects() {
+        Long userId = userContext.getUserId();
         var projects = projectRepository.findAllAccessibleByUser(userId);
         return projectMapper.toListOfProjectSummaryResponse(projects);
     }
 
+
     @Override
-    public ProjectResponse getUserProjectById(Long id, Long userId) {
+    public ProjectResponse getUserProjectById(Long id) {
+        Long userId = userContext.getUserId();
         Project project = getAccessibleProjectById(id, userId);
         return projectMapper.toProjectResponse(project);
     }
 
     @Override
-    public ProjectResponse updateProject(Long id, ProjectRequest request, Long userId) {
+    public ProjectResponse updateProject(Long id, ProjectRequest request) {
+        Long userId = userContext.getUserId();
         Project project = getAccessibleProjectById(id, userId);
 
         if (!project.getOwner().getId().equals(userId)) {
@@ -85,7 +94,8 @@ public class ProjectServiceImpl implements ProjectService {
     }
 
     @Override
-    public void softDelete(Long id, Long userId) {
+    public void softDelete(Long id) {
+        Long userId = userContext.getUserId();
         Project project = getAccessibleProjectById(id, userId);
 
         if (!project.getOwner().getId().equals(userId)) {
