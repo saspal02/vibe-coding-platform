@@ -13,5 +13,5 @@ import lombok.Setter;
 @AllArgsConstructor
 public class ProjectMemberId {
     Long projectId;
-    Long memberId;
+    Long userId;
 }

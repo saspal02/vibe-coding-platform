@@ -15,6 +15,5 @@ public class ChatMessage extends BaseEntity {
     private MessageRole role;
     private String toolCalls;
     private Integer tokensUsed;
-    private Integer createdAt;
 
 }

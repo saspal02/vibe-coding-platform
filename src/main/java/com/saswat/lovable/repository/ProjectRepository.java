@@ -30,7 +30,7 @@ public interface ProjectRepository extends JpaRepository<Project, Long> {
           AND EXISTS (
               SELECT 1 FROM ProjectMember pm
               WHERE pm.id.userId = :userId
-              AND pm.id.projectID = :projectId
+              AND pm.id.projectId = :projectId
               )
     """)
     Optional<Project> findAccessibleProjectsById(@Param("projectId" ) Long projectId,
