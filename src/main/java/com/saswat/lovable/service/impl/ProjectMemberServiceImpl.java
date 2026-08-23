@@ -15,6 +15,7 @@ import com.saswat.lovable.security.AuthUtil;
 import com.saswat.lovable.security.UserContext;
 import com.saswat.lovable.service.ProjectMemberService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -34,6 +35,7 @@ public class ProjectMemberServiceImpl implements ProjectMemberService {
     private final UserContext userContext;
 
     @Override
+    @PreAuthorize("@security.canViewMembers(#projectId")
     public List<MemberResponse> getProjectMember(Long projectId) {
         Long userId = userContext.getUserId();
         Project project = getAccessibleProjectById(projectId, userId);
@@ -45,7 +47,9 @@ public class ProjectMemberServiceImpl implements ProjectMemberService {
 
     }
 
+
     @Override
+    @PreAuthorize("@security.canManageMembers(#projectId")
     public MemberResponse inviteMember(Long projectId, InviteMemberRequest request) {
         Long userId = userContext.getUserId();
 
@@ -79,6 +83,7 @@ public class ProjectMemberServiceImpl implements ProjectMemberService {
     }
 
     @Override
+    @PreAuthorize("@security.canManageMembers(#projectId)")
     public MemberResponse updateMemberRole(Long projectId, Long memberId, UpdateMemberRoleRequest request) {
         Long userId = userContext.getUserId();
         Project project = getAccessibleProjectById(projectId, userId);
@@ -96,6 +101,7 @@ public class ProjectMemberServiceImpl implements ProjectMemberService {
     }
 
     @Override
+    @PreAuthorize("@security.canManageMembers(#projectId)")
     public void removeProjectMember(Long projectId, Long memberId) {
         Long userId = userContext.getUserId();
         Project project = getAccessibleProjectById(projectId, userId);

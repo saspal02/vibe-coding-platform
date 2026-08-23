@@ -16,6 +16,7 @@ import com.saswat.lovable.repository.UserRepository;
 import com.saswat.lovable.security.UserContext;
 import com.saswat.lovable.service.ProjectService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -73,6 +74,7 @@ public class ProjectServiceImpl implements ProjectService {
 
 
     @Override
+    @PreAuthorize("@security.canViewProject(#projectId)")
     public ProjectResponse getUserProjectById(Long id) {
         Long userId = userContext.getUserId();
         Project project = getAccessibleProjectById(id, userId);
@@ -80,6 +82,7 @@ public class ProjectServiceImpl implements ProjectService {
     }
 
     @Override
+    @PreAuthorize("@security.canEditProject(#projectId)")
     public ProjectResponse updateProject(Long id, ProjectRequest request) {
         Long userId = userContext.getUserId();
         Project project = getAccessibleProjectById(id, userId);
@@ -94,6 +97,7 @@ public class ProjectServiceImpl implements ProjectService {
     }
 
     @Override
+    @PreAuthorize("@security.canDeleteProject(#projectId)")
     public void softDelete(Long id) {
         Long userId = userContext.getUserId();
         Project project = getAccessibleProjectById(id, userId);
