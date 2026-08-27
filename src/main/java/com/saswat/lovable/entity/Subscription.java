@@ -3,25 +3,35 @@ package com.saswat.lovable.entity;
 
 import com.saswat.lovable.common.entity.BaseEntity;
 import com.saswat.lovable.enums.SubscriptionStatus;
-import lombok.Getter;
-import lombok.Setter;
+import jakarta.persistence.*;
+import lombok.*;
 import org.apache.catalina.User;
 
 import java.time.Instant;
 
+@Entity
 @Getter
 @Setter
+@AllArgsConstructor
+@NoArgsConstructor
+@Builder
 public class Subscription extends BaseEntity {
 
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(nullable = false, name = "user_id")
     private User user;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(nullable = false, name = "plan_id")
     private Plan plan;
 
     private SubscriptionStatus status;
 
-    private String stripeCustomerId;
-    private String stripeSubscriptionId;
+    private String stripeSubscriptionId; // can be renamed to gatewaySubscriptionId
 
     private Instant currentPeriodStart;
     private Instant currentPeriodEnd;

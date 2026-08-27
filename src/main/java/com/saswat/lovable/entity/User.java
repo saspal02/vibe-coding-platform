@@ -26,6 +26,10 @@ public class User extends BaseEntity implements UserDetails {
     private String username;
     private String password;
     private String name;
+
+    @Column(unique = true)
+    private String stripeCustomerId;
+
     private String avatarUrl;
 
     private Instant deletedAt; //soft delete

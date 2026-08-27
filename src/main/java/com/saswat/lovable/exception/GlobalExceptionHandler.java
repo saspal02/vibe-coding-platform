@@ -30,9 +30,33 @@ public class GlobalExceptionHandler {
     public ResponseEntity<ApiError> handleMethodArgumentNotValid(MethodArgumentNotValidException ex) {
         List<ApiFieldError> errors = ex.getBindingResult().getFieldErrors().stream()
                 .map(error -> new ApiFieldError(error.getField(), error.getDefaultMessage()))
-                .toList();;
+                .toList();
 
         ApiError apiError = new ApiError(HttpStatus.BAD_REQUEST, "Input validation failed", errors);
+        return ResponseEntity.status(apiError.status()).body(apiError);
+    }
+
+    @ExceptionHandler(UsernameNotFoundException.class)
+    public ResponseEntity<ApiError> handleUsernameNotFound(UsernameNotFoundException ex) {
+        ApiError apiError = new ApiError(HttpStatus.NOT_FOUND, "User with username " + ex.getMessage() + " not found");
+        return ResponseEntity.status(apiError.status()).body(apiError);
+    }
+
+    @ExceptionHandler(AuthenticationException.class)
+    public ResponseEntity<ApiError> handleAuthentication(AuthenticationException ex) {
+        ApiError apiError = new ApiError(HttpStatus.UNAUTHORIZED, "Authentication failed: " + ex.getMessage());
+        return ResponseEntity.status(apiError.status()).body(apiError);
+    }
+
+    @ExceptionHandler(JwtException.class)
+    public ResponseEntity<ApiError> handleJwt(JwtException ex) {
+        ApiError apiError = new ApiError(HttpStatus.UNAUTHORIZED, "Invalid JWT token: " + ex.getMessage());
+        return ResponseEntity.status(apiError.status()).body(apiError);
+    }
+
+    @ExceptionHandler(AccessDeniedException.class)
+    public ResponseEntity<ApiError> handleAccessDenied(AccessDeniedException ex) {
+        ApiError apiError = new ApiError(HttpStatus.FORBIDDEN, "Access denied: " + ex.getMessage());
         return ResponseEntity.status(apiError.status()).body(apiError);
     }
 }
