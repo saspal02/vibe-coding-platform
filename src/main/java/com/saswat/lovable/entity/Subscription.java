@@ -5,7 +5,6 @@ import com.saswat.lovable.common.entity.BaseEntity;
 import com.saswat.lovable.enums.SubscriptionStatus;
 import jakarta.persistence.*;
 import lombok.*;
-import org.apache.catalina.User;
 
 import java.time.Instant;
 
@@ -29,6 +28,7 @@ public class Subscription extends BaseEntity {
     @JoinColumn(nullable = false, name = "plan_id")
     private Plan plan;
 
+    @Enumerated(value = EnumType.STRING)
     private SubscriptionStatus status;
 
     private String stripeSubscriptionId; // can be renamed to gatewaySubscriptionId
