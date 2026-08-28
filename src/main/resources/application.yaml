@@ -23,6 +23,6 @@ stripe:
   api:
     secret: ${STRIPE_SECRET}
   webhook:
-    secret: ${WEBHOOK_SECRET}
+    secret:#{WEBHOOK_SECRET}
 
 client.url: http://localhost:8080

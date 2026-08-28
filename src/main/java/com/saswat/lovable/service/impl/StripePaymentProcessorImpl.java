@@ -6,7 +6,6 @@ import com.saswat.lovable.dto.subscriiption.PortalResponse;
 import com.saswat.lovable.entity.Plan;
 import com.saswat.lovable.entity.User;
 import com.saswat.lovable.enums.SubscriptionStatus;
-import com.saswat.lovable.exception.BadRequestException;
 import com.saswat.lovable.exception.ResourceNotFoundException;
 import com.saswat.lovable.repository.PlanRepository;
 import com.saswat.lovable.repository.UserRepository;
@@ -81,24 +80,7 @@ public class StripePaymentProcessorImpl implements PaymentProcessor {
 
     @Override
     public PortalResponse openCustomerPortal() {
-        User user = getUser(userContext.getUserId());
-        String stripeCustomerId = user.getStripeCustomerId();
-
-        if (stripeCustomerId == null || stripeCustomerId.isEmpty()) {
-            throw new BadRequestException("User does not have a stripe customer ID, UserId" + userContext.getUserId());
-
-        }
-
-        try {
-            var portalSession = com.stripe.model.billingportal.Session.create(
-                    com.stripe.param.billingportal.SessionCreateParams.builder()
-                            .setCustomer(stripeCustomerId)
-                            .setReturnUrl(frontendUrl)
-                            .build()
-            );
-        } catch (StripeException e) {
-            throw new RuntimeException(e);
-        }
+        return null;
     }
 
     @Override

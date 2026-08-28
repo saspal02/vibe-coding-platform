@@ -8,7 +8,6 @@ import com.saswat.lovable.enums.SubscriptionStatus;
 import com.saswat.lovable.exception.ResourceNotFoundException;
 import com.saswat.lovable.mapper.SubscriptionMapper;
 import com.saswat.lovable.repository.PlanRepository;
-import com.saswat.lovable.repository.ProjectMemberRepository;
 import com.saswat.lovable.repository.SubscriptionRepository;
 import com.saswat.lovable.repository.UserRepository;
 import com.saswat.lovable.security.UserContext;
@@ -16,7 +15,6 @@ import com.saswat.lovable.service.SubscriptionService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.time.Instant;
 import java.util.Set;
@@ -31,9 +29,6 @@ public class SubscriptionServiceImpl implements SubscriptionService {
     private final SubscriptionMapper subscriptionMapper;
     private final UserRepository userRepository;
     private final PlanRepository planRepository;
-    private final ProjectMemberRepository projectMemberRepository;
-
-    private final Integer FREE_TIER_PROJECT_ALLOWED = 1;
 
 
     @Override
@@ -68,51 +63,12 @@ public class SubscriptionServiceImpl implements SubscriptionService {
     }
 
     @Override
-    @Transactional
-    public void updateSubscription(String gatewaySubscriptionId, SubscriptionStatus status,
-                                   Instant periodStart, Instant periodEnd, Boolean cancelAtPeriodEnd, Long planId) {
+    public void updateSubscription(String subscriptionId, SubscriptionStatus status, Instant periodStart, Instant periodEnd, Boolean cancelAtPeriodEnd, Long planId) {
 
-
-        Subscription subscription = getSubscription(gatewaySubscriptionId);
-
-        boolean hasSubscriptionUpdated = false;
-
-        if (status != null && status != subscription.getStatus()) {
-            subscription.setStatus(status);
-            hasSubscriptionUpdated = true;
-        }
-
-        if (periodStart != null && !periodStart.equals(subscription.getCurrentPeriodStart())) {
-            subscription.setCurrentPeriodStart(periodStart);
-            hasSubscriptionUpdated = true;
-        }
-
-        if (periodEnd != null && !periodEnd.equals(subscription.getCurrentPeriodEnd())) {
-            subscription.setCurrentPeriodEnd(periodEnd);
-            hasSubscriptionUpdated = true;
-        }
-
-        if (cancelAtPeriodEnd != null && cancelAtPeriodEnd != subscription.getCancelAtPeriodEnd()) {
-            subscription.setCancelAtPeriodEnd(cancelAtPeriodEnd);
-            hasSubscriptionUpdated = true;
-        }
-
-        if (planId != null && !planId.equals(subscription.getPlan().getId())) {
-            Plan newPlan = getPlan(planId);
-            subscription.setPlan(newPlan);
-            hasSubscriptionUpdated = true;
-        }
-
-        if (hasSubscriptionUpdated) {
-            log.debug("Subscription has been updated: {}", gatewaySubscriptionId);
-        }
     }
 
     @Override
-    public void cancelSubscription(String gatewaySubscriptionId) {
-        Subscription subscription = getSubscription(gatewaySubscriptionId);
-        subscription.setStatus(SubscriptionStatus.CANCELED);
-        subscriptionRepository.save(subscription);
+    public void cancelSubscription(String subscriptionId) {
 
     }
 
@@ -146,19 +102,6 @@ public class SubscriptionServiceImpl implements SubscriptionService {
        subscription.setStatus(SubscriptionStatus.PAST_DUE);
        subscriptionRepository.save(subscription);
 
-    }
-
-    @Override
-    public boolean canCreateNewProject() {
-        SubscriptionResponse currentSubscription = getCurrentSubscription();
-
-        int countOfOwnedProjects = projectMemberRepository.countProjectOwnedByUser(userContext.getUserId());
-
-        if (currentSubscription.plan() == null) {
-            return countOfOwnedProjects >= FREE_TIER_PROJECT_ALLOWED;
-        }
-
-        return countOfOwnedProjects < currentSubscription.plan().maxProjects();
     }
 
     //Utility methods
