@@ -8,6 +8,7 @@ import com.saswat.lovable.entity.ProjectMember;
 import com.saswat.lovable.entity.ProjectMemberId;
 import com.saswat.lovable.entity.User;
 import com.saswat.lovable.enums.ProjectRole;
+import com.saswat.lovable.exception.BadRequestException;
 import com.saswat.lovable.exception.ResourceNotFoundException;
 import com.saswat.lovable.mapper.ProjectMapper;
 import com.saswat.lovable.repository.ProjectMemberRepository;
@@ -15,6 +16,7 @@ import com.saswat.lovable.repository.ProjectRepository;
 import com.saswat.lovable.repository.UserRepository;
 import com.saswat.lovable.security.UserContext;
 import com.saswat.lovable.service.ProjectService;
+import com.saswat.lovable.service.SubscriptionService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
@@ -33,16 +35,20 @@ public class ProjectServiceImpl implements ProjectService {
     private final ProjectMapper projectMapper;
     private final ProjectMemberRepository projectMemberRepository;
     private final UserContext userContext;
+    private final SubscriptionService subscriptionService;
 
     @Override
     public ProjectResponse createProject(ProjectRequest request) {
-        Long userId = userContext.getUserId();
+
+        if (!subscriptionService.canCreateNewProject()) {
+            throw new BadRequestException("User cannot create a New project with current Plan, Upgrade plan now.");
+        }
 
 //        User owner = userRepository.findById(userId).orElseThrow(
 //                () -> new ResourceNotFoundException("User", userId.toString())
 //        );
 
-        User owner = userRepository.getReferenceById(userId);
+        User owner = userRepository.getReferenceById(userContext.getUserId());
 
         Project project = Project.builder()
                 .name(request.name())
