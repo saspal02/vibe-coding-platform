@@ -33,7 +33,7 @@ public class SubscriptionServiceImpl implements SubscriptionService {
     private final PlanRepository planRepository;
     private final ProjectMemberRepository projectMemberRepository;
 
-    private final Integer FREE_TIER_PROJECT_ALLOWED = 1;
+    private final Integer FREE_TIER_PROJECT_ALLOWED = 100;
 
 
     @Override
@@ -50,7 +50,7 @@ public class SubscriptionServiceImpl implements SubscriptionService {
 
     @Override
     public void activateSubscription(Long userId, Long planId, String subscriptionId, String customerId) {
-        boolean exists = subscriptionRepository.existsByStripeSubscription(subscriptionId);
+        boolean exists = subscriptionRepository.existsByStripeSubscriptionId(subscriptionId);
         if (exists) return;
 
         User user = getUser(userId);
@@ -174,7 +174,7 @@ public class SubscriptionServiceImpl implements SubscriptionService {
     }
 
     private Subscription getSubscription(String gatewaySubscriptionId) {
-        return subscriptionRepository.findByStripeSubscription(gatewaySubscriptionId).orElseThrow(() ->
+        return subscriptionRepository.findByStripeSubscriptionId(gatewaySubscriptionId).orElseThrow(() ->
                 new ResourceNotFoundException("subscription", gatewaySubscriptionId));
     }
 }

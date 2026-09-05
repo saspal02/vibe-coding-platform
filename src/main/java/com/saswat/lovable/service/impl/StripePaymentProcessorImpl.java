@@ -96,9 +96,11 @@ public class StripePaymentProcessorImpl implements PaymentProcessor {
                             .setReturnUrl(frontendUrl)
                             .build()
             );
+            return new PortalResponse(portalSession.getUrl());
         } catch (StripeException e) {
             throw new RuntimeException(e);
         }
+
     }
 
     @Override
@@ -108,7 +110,7 @@ public class StripePaymentProcessorImpl implements PaymentProcessor {
         switch (type) {
             case "checkout.session.completed" -> handleCheckoutSessionCompleted((Session) stripeObject, metadata);
             case "customer.subscription.updated" -> handleCustomerSubscriptionUpdated((Subscription) stripeObject);
-            case "customer.subscription.deleted" -> handleCustomerSubscriptionUpdated((Subscription) stripeObject);
+            case "customer.subscription.deleted" -> handleCustomerSubscriptionDeleted((Subscription) stripeObject);
             case "invoice.paid" -> handleInvoicePaid((Invoice) stripeObject);
             case "invoice.payment_failed" -> handleInvoicePaymentFailed((Invoice) stripeObject);
             default -> log.debug("Ignoring the event: {}", type);
