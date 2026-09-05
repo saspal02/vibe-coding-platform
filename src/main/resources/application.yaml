@@ -3,7 +3,7 @@ spring:
     name: lovable
 
   datasource:
-    url: jdbc:postgresql://localhost:5432/${PSQL_DATABASE}
+    url: jdbc:postgresql://localhost:9010/${PSQL_DATABASE}
     username: ${PSQL_USER}
     password: ${PSQL_PASSWORD}
     driver-class-name: org.postgresql.Driver
@@ -16,6 +16,14 @@ spring:
       hibernate:
         dialect: org.hibernate.dialect.PostgreSQLDialect
 
+  ai:
+    openai:
+      api-key:
+      base-url: https://openrouter.ai/api
+      chat:
+        options:
+          model: openai/gpt-5.2-codex
+          temperature: 0.0
 jwt:
   secret-key: ${JWT_KEY}
 
@@ -26,3 +34,14 @@ stripe:
     secret: ${WEBHOOK_SECRET}
 
 client.url: http://localhost:8080
+
+logging:
+  level:
+    org.springframework.ai:
+      chat.client: DEBUG
+
+minio:
+  url: http://localhost:9000          # or minio:9000 if inside docker network
+  access-key: ${MINIO_ROOT_USER}
+  secret-key: ${MINIO_ROOT_PASSWORD}
+  project-bucket: projects
