@@ -1,15 +1,18 @@
 package com.saswat.lovable.service.impl;
 
 import com.saswat.lovable.llm.PromptUtils;
+import com.saswat.lovable.llm.advisors.FileTreeContextAdvisor;
 import com.saswat.lovable.security.UserContext;
 import com.saswat.lovable.service.AiGenerationService;
 import com.saswat.lovable.service.ProjectFileService;
+import com.saswat.lovable.tools.CodeGenerationTools;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.ai.chat.client.ChatClient;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Flux;
+import reactor.core.scheduler.Schedulers;
 
 import java.util.Map;
 import java.util.Objects;
@@ -24,6 +27,7 @@ public class AiGenerationServiceImpl implements AiGenerationService {
     private final ChatClient chatClient;
     private final UserContext userContext;
     private final ProjectFileService projectFileService;
+    private final FileTreeContextAdvisor fileTreeContextAdvisor;
 
     private static final Pattern FILE_TAG_PATTERN = Pattern.compile("<file path=\"([^\"]+)\">(.*?)</file>", Pattern.DOTALL);
 
@@ -39,11 +43,15 @@ public class AiGenerationServiceImpl implements AiGenerationService {
 
         StringBuilder fullResponseBuffer = new StringBuilder();
 
+        CodeGenerationTools codeGenerationTools = new CodeGenerationTools(projectFileService, projectId);
+
         return chatClient.prompt()
                 .system(PromptUtils.CODE_GENERATION_SYSTEM_PROMPT)
                 .user(userMessage)
+                .tools(codeGenerationTools)
                 .advisors(advisorSpec -> {
                         advisorSpec.params(advisorParams);
+                        advisorSpec.advisors(fileTreeContextAdvisor);
                         }
 
                 )
@@ -55,7 +63,9 @@ public class AiGenerationServiceImpl implements AiGenerationService {
 
                 })
                 .doOnComplete(() -> {
-                    parseAndSaveFiles(fullResponseBuffer.toString(), projectId);
+                    Schedulers.boundedElastic().schedule(() -> {
+                        parseAndSaveFiles(fullResponseBuffer.toString(), projectId);
+                    });
 
                 })
                 .doOnError(error -> log.error("Error during streaming for projectId {}: ", projectId))
