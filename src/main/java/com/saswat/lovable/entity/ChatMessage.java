@@ -5,6 +5,8 @@ import com.saswat.lovable.enums.MessageRole;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.util.List;
+
 @Entity
 @Table(name = "chat_messages")
 @Getter
@@ -24,12 +26,18 @@ public class ChatMessage extends BaseEntity {
             @JoinColumn(name = "user_id", referencedColumnName = "user_id", nullable = false)
     })
     private ChatSession chatSession;
-    @Column(nullable = false)
+
+
+    @Column(columnDefinition = "text")
     private String content;
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private MessageRole role;
+
+    @OneToMany(mappedBy = "chatMessage", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @OrderBy("sequenceOrder ASC")
+    private List<ChatEvent> events;
 
     private String toolCalls;
     private Integer tokensUsed = 0;

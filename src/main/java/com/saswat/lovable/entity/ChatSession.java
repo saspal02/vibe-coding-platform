@@ -3,8 +3,6 @@ package com.saswat.lovable.entity;
 import com.saswat.lovable.common.entity.BaseEntity;
 import jakarta.persistence.*;
 import lombok.*;
-import org.apache.catalina.User;
-
 import java.time.Instant;
 
 @Entity

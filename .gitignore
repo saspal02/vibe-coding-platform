@@ -34,3 +34,5 @@ build/
 
 ### env files ###
 .env
+
+skills-lock.json
