@@ -83,7 +83,7 @@ public class AiGenerationServiceImpl implements AiGenerationService {
                 .doOnNext(response -> {
                     String content = response.getResult().getOutput().getText();
 
-                    if (content != null & !content.isEmpty() && endTime.get() == 0) { // first non-empty chunk received
+                    if (content != null && !content.isEmpty() && endTime.get() == 0) { // first non-empty chunk received
                         endTime.set(System.currentTimeMillis());
                     }
                     if (response.getMetadata().getUsage() != null) {
