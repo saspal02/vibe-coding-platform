@@ -1,9 +1,7 @@
 package com.saswat.lovable.service.impl;
 
-import com.saswat.lovable.dto.subscriiption.PlanLimitsResponse;
-import com.saswat.lovable.dto.subscriiption.PlanResponse;
-import com.saswat.lovable.dto.subscriiption.SubscriptionResponse;
-import com.saswat.lovable.dto.subscriiption.UsageTodayResponse;
+import com.saswat.lovable.dto.subscription.PlanResponse;
+import com.saswat.lovable.dto.subscription.SubscriptionResponse;
 import com.saswat.lovable.entity.UsageLog;
 import com.saswat.lovable.repository.UsageLogRepository;
 import com.saswat.lovable.security.AuthUtil;

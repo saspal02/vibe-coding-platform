@@ -1,6 +1,6 @@
 package com.saswat.lovable.service;
 
-import com.saswat.lovable.dto.subscriiption.SubscriptionResponse;
+import com.saswat.lovable.dto.subscription.SubscriptionResponse;
 import com.saswat.lovable.enums.SubscriptionStatus;
 
 import java.time.Instant;

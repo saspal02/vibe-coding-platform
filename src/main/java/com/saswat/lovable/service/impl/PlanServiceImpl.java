@@ -1,6 +1,6 @@
 package com.saswat.lovable.service.impl;
 
-import com.saswat.lovable.dto.subscriiption.PlanResponse;
+import com.saswat.lovable.dto.subscription.PlanResponse;
 import com.saswat.lovable.service.PlanService;
 import org.springframework.stereotype.Service;
 

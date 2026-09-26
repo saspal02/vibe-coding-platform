@@ -1,6 +1,6 @@
 package com.saswat.lovable.service;
 
-import com.saswat.lovable.dto.subscriiption.PlanResponse;
+import com.saswat.lovable.dto.subscription.PlanResponse;
 
 import java.util.List;
 

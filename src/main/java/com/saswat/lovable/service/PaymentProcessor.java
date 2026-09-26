@@ -1,8 +1,8 @@
 package com.saswat.lovable.service;
 
-import com.saswat.lovable.dto.subscriiption.CheckoutRequest;
-import com.saswat.lovable.dto.subscriiption.CheckoutResponse;
-import com.saswat.lovable.dto.subscriiption.PortalResponse;
+import com.saswat.lovable.dto.subscription.CheckoutRequest;
+import com.saswat.lovable.dto.subscription.CheckoutResponse;
+import com.saswat.lovable.dto.subscription.PortalResponse;
 import com.stripe.model.StripeObject;
 
 import java.util.Map;

@@ -1,7 +1,6 @@
 package com.saswat.lovable.controller;
 
-import com.saswat.lovable.dto.subscriiption.PlanLimitsResponse;
-import com.saswat.lovable.dto.subscriiption.UsageTodayResponse;
+import com.saswat.lovable.dto.subscription.UsageTodayResponse;
 import com.saswat.lovable.service.UsageService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;

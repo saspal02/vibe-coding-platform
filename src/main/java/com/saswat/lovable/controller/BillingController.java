@@ -1,6 +1,6 @@
 package com.saswat.lovable.controller;
 
-import com.saswat.lovable.dto.subscriiption.*;
+import com.saswat.lovable.dto.subscription.*;
 import com.saswat.lovable.service.PaymentProcessor;
 import com.saswat.lovable.service.PlanService;
 import com.saswat.lovable.service.SubscriptionService;

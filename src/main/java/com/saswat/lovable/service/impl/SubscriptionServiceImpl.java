@@ -1,6 +1,6 @@
 package com.saswat.lovable.service.impl;
 
-import com.saswat.lovable.dto.subscriiption.SubscriptionResponse;
+import com.saswat.lovable.dto.subscription.SubscriptionResponse;
 import com.saswat.lovable.entity.Plan;
 import com.saswat.lovable.entity.Subscription;
 import com.saswat.lovable.entity.User;
@@ -155,7 +155,7 @@ public class SubscriptionServiceImpl implements SubscriptionService {
         int countOfOwnedProjects = projectMemberRepository.countProjectOwnedByUser(authUtil.getCurrentUserId());
 
         if (currentSubscription.plan() == null) {
-            return countOfOwnedProjects >= FREE_TIER_PROJECT_ALLOWED;
+            return countOfOwnedProjects < FREE_TIER_PROJECT_ALLOWED;
         }
 
         return countOfOwnedProjects < currentSubscription.plan().maxProjects();

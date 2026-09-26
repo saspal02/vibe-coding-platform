@@ -1,8 +1,8 @@
 package com.saswat.lovable.service.impl;
 
-import com.saswat.lovable.dto.subscriiption.CheckoutRequest;
-import com.saswat.lovable.dto.subscriiption.CheckoutResponse;
-import com.saswat.lovable.dto.subscriiption.PortalResponse;
+import com.saswat.lovable.dto.subscription.CheckoutRequest;
+import com.saswat.lovable.dto.subscription.CheckoutResponse;
+import com.saswat.lovable.dto.subscription.PortalResponse;
 import com.saswat.lovable.entity.Plan;
 import com.saswat.lovable.entity.User;
 import com.saswat.lovable.enums.SubscriptionStatus;
