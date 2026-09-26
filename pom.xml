@@ -50,6 +50,14 @@
 			<artifactId>spring-boot-starter-security</artifactId>
 		</dependency>
 
+		<!-- Source: https://mvnrepository.com/artifact/io.fabric8/kubernetes-client -->
+		<dependency>
+			<groupId>io.fabric8</groupId>
+			<artifactId>kubernetes-client</artifactId>
+			<version>7.9.0</version>
+			<scope>compile</scope>
+		</dependency>
+
 		<dependency>
 			<groupId>io.jsonwebtoken</groupId>
 			<artifactId>jjwt-api</artifactId>
