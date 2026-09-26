@@ -14,7 +14,7 @@ import com.saswat.lovable.mapper.ProjectMapper;
 import com.saswat.lovable.repository.ProjectMemberRepository;
 import com.saswat.lovable.repository.ProjectRepository;
 import com.saswat.lovable.repository.UserRepository;
-import com.saswat.lovable.security.UserContext;
+import com.saswat.lovable.security.AuthUtil;
 import com.saswat.lovable.service.ProjectService;
 import com.saswat.lovable.service.ProjectTemplateService;
 import com.saswat.lovable.service.SubscriptionService;
@@ -35,7 +35,7 @@ public class ProjectServiceImpl implements ProjectService {
     private final UserRepository userRepository;
     private final ProjectMapper projectMapper;
     private final ProjectMemberRepository projectMemberRepository;
-    private final UserContext userContext;
+    private final AuthUtil authUtil;
     private final SubscriptionService subscriptionService;
     private final ProjectTemplateService projectTemplateService;
 
@@ -50,7 +50,7 @@ public class ProjectServiceImpl implements ProjectService {
 //                () -> new ResourceNotFoundException("User", userId.toString())
 //        );
 
-        User owner = userRepository.getReferenceById(userContext.getUserId());
+        User owner = userRepository.getReferenceById(authUtil.getCurrentUserId());
 
         Project project = Project.builder()
                 .name(request.name())
@@ -77,24 +77,28 @@ public class ProjectServiceImpl implements ProjectService {
 
     @Override
     public List<ProjectSummaryResponse> getUserProjects() {
-        Long userId = userContext.getUserId();
-        var projects = projectRepository.findAllAccessibleByUser(userId);
-        return projectMapper.toListOfProjectSummaryResponse(projects);
+        Long userId = authUtil.getCurrentUserId();
+        var projectWithRoles = projectRepository.findAllAccessibleByUser(userId);
+        return projectWithRoles.stream()
+                .map(p -> projectMapper.toProjectSummaryResponse(p.getProject(), p.getRole()))
+                .toList();
     }
 
 
     @Override
     @PreAuthorize("@security.canViewProject(#projectId)")
-    public ProjectResponse getUserProjectById(Long id) {
-        Long userId = userContext.getUserId();
-        Project project = getAccessibleProjectById(id, userId);
-        return projectMapper.toProjectResponse(project);
+    public ProjectSummaryResponse getUserProjectById(Long projectId) {
+        Long userId = authUtil.getCurrentUserId();
+        var projectWithRole = projectRepository.findAccessibleProjectByIdWithRole(projectId, userId)
+                .orElseThrow(() -> new BadRequestException("Project Not Found"));
+
+        return projectMapper.toProjectSummaryResponse(projectWithRole.getProject(), projectWithRole.getRole());
     }
 
     @Override
     @PreAuthorize("@security.canEditProject(#projectId)")
     public ProjectResponse updateProject(Long id, ProjectRequest request) {
-        Long userId = userContext.getUserId();
+        Long userId = authUtil.getCurrentUserId();
         Project project = getAccessibleProjectById(id, userId);
 
         if (!project.getOwner().getId().equals(userId)) {
@@ -109,7 +113,7 @@ public class ProjectServiceImpl implements ProjectService {
     @Override
     @PreAuthorize("@security.canDeleteProject(#projectId)")
     public void softDelete(Long id) {
-        Long userId = userContext.getUserId();
+        Long userId = authUtil.getCurrentUserId();
         Project project = getAccessibleProjectById(id, userId);
 
         if (!project.getOwner().getId().equals(userId)) {

@@ -11,7 +11,7 @@ import com.saswat.lovable.repository.PlanRepository;
 import com.saswat.lovable.repository.ProjectMemberRepository;
 import com.saswat.lovable.repository.SubscriptionRepository;
 import com.saswat.lovable.repository.UserRepository;
-import com.saswat.lovable.security.UserContext;
+import com.saswat.lovable.security.AuthUtil;
 import com.saswat.lovable.service.SubscriptionService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -26,7 +26,7 @@ import java.util.Set;
 @Slf4j
 public class SubscriptionServiceImpl implements SubscriptionService {
 
-    private final UserContext userContext;
+    private final AuthUtil authUtil;
     private final SubscriptionRepository subscriptionRepository;
     private final SubscriptionMapper subscriptionMapper;
     private final UserRepository userRepository;
@@ -38,7 +38,7 @@ public class SubscriptionServiceImpl implements SubscriptionService {
 
     @Override
     public SubscriptionResponse getCurrentSubscription() {
-        var currentSubscription = subscriptionRepository.findByUserIdAndStatusIn(userContext.getUserId(), Set.of(
+        var currentSubscription = subscriptionRepository.findByUserIdAndStatusIn(authUtil.getCurrentUserId(), Set.of(
                 SubscriptionStatus.ACTIVE, SubscriptionStatus.PAST_DUE,
                 SubscriptionStatus.TRIALING
         )).orElse(
@@ -152,7 +152,7 @@ public class SubscriptionServiceImpl implements SubscriptionService {
     public boolean canCreateNewProject() {
         SubscriptionResponse currentSubscription = getCurrentSubscription();
 
-        int countOfOwnedProjects = projectMemberRepository.countProjectOwnedByUser(userContext.getUserId());
+        int countOfOwnedProjects = projectMemberRepository.countProjectOwnedByUser(authUtil.getCurrentUserId());
 
         if (currentSubscription.plan() == null) {
             return countOfOwnedProjects >= FREE_TIER_PROJECT_ALLOWED;

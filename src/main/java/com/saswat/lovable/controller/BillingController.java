@@ -43,7 +43,6 @@ public class BillingController {
         return ResponseEntity.ok(subscriptionService.getCurrentSubscription());
     }
 
-
     @PostMapping("/api/payments/checkout")
     public ResponseEntity<CheckoutResponse> createCheckoutResponse(
             @RequestBody CheckoutRequest request

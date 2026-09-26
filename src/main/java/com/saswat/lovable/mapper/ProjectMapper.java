@@ -3,6 +3,7 @@ package com.saswat.lovable.mapper;
 import com.saswat.lovable.dto.project.ProjectResponse;
 import com.saswat.lovable.dto.project.ProjectSummaryResponse;
 import com.saswat.lovable.entity.Project;
+import com.saswat.lovable.enums.ProjectRole;
 import org.mapstruct.Mapper;
 
 import java.util.List;
@@ -11,6 +12,8 @@ import java.util.List;
 public interface ProjectMapper {
 
     ProjectResponse toProjectResponse(Project project);
+
+    ProjectSummaryResponse toProjectSummaryResponse(Project project, ProjectRole projectRole);
 
     List<ProjectSummaryResponse> toListOfProjectSummaryResponse(List<Project> projects);
 }

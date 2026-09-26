@@ -59,4 +59,10 @@ public class GlobalExceptionHandler {
         ApiError apiError = new ApiError(HttpStatus.FORBIDDEN, "Access denied: " + ex.getMessage());
         return ResponseEntity.status(apiError.status()).body(apiError);
     }
+
+    @ExceptionHandler(org.springframework.security.core.AuthenticationException.class)
+    public ResponseEntity<ApiError> handleSpringAuthentication(org.springframework.security.core.AuthenticationException ex) {
+        ApiError apiError = new ApiError(HttpStatus.UNAUTHORIZED, "Authentication failed: " + ex.getMessage());
+        return ResponseEntity.status(apiError.status()).body(apiError);
+    }
 }

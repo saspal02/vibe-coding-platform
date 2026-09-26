@@ -5,7 +5,6 @@ import com.saswat.lovable.dto.subscriiption.UsageTodayResponse;
 
 public interface UsageService {
 
-    UsageTodayResponse getTodayUsageOfUser(Long userId);
-
-    PlanLimitsResponse getPlanLimitsOfUser(Long userId);
+   void recordTokenUsage(Long userId, int actualTokens);
+   void checkDailyTokenUsage();
 }

@@ -1,6 +1,5 @@
 package com.saswat.lovable.security;
 
-import io.jsonwebtoken.Claims;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -21,37 +20,32 @@ import java.io.IOException;
 public class JwtAuthFilter extends OncePerRequestFilter {
 
     private final AuthUtil authUtil;
-    private final UserContext userContext;
     private final HandlerExceptionResolver handlerExceptionResolver;
+
     @Override
-    protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
+    protected void doFilterInternal(final HttpServletRequest request, final HttpServletResponse response, final FilterChain filterChain)
             throws ServletException, IOException {
-    try {
-        log.info("Incoming request: {}", request.getRequestURI());
-        final String requestHeaderToken = request.getHeader("Authorization");
-        if (requestHeaderToken == null || !requestHeaderToken.startsWith("Bearer ")) {
+        try {
+            log.info("Incoming request: {}", request.getRequestURI());
+            final String requestHeaderToken = request.getHeader("Authorization");
+            if (requestHeaderToken == null || !requestHeaderToken.startsWith("Bearer ")) {
+                filterChain.doFilter(request, response);
+                return;
+            }
+
+            final String jwtToken = requestHeaderToken.substring("Bearer ".length());
+
+            final JwtUserPrincipal userPrincipal = authUtil.verifyAccessToken(jwtToken);
+
+            if (userPrincipal != null && SecurityContextHolder.getContext().getAuthentication() == null) {
+                final UsernamePasswordAuthenticationToken auth =
+                        new UsernamePasswordAuthenticationToken(userPrincipal, null, userPrincipal.authorities());
+                SecurityContextHolder.getContext().setAuthentication(auth);
+            }
             filterChain.doFilter(request, response);
-            return;
+
+        } catch (final Exception e) {
+            handlerExceptionResolver.resolveException(request, response, null, e);
         }
-
-        String jwtToken = requestHeaderToken.substring("Bearer ".length());
-
-        Claims claims = authUtil.verifyAccessToken(jwtToken);
-
-        if (claims != null && SecurityContextHolder.getContext().getAuthentication() == null) {
-            var auth = new UsernamePasswordAuthenticationToken(claims.getSubject(), null);
-
-            SecurityContextHolder.getContext().setAuthentication(auth);
-
-            userContext.setUserId(authUtil.extractUserId(claims));
-
-        }
-        filterChain.doFilter(request, response);
-
-    } catch (Exception e) {
-        handlerExceptionResolver.resolveException(request, response, null, e);
-    }
-
-
     }
 }

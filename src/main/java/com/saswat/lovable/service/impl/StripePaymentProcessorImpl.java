@@ -10,7 +10,7 @@ import com.saswat.lovable.exception.BadRequestException;
 import com.saswat.lovable.exception.ResourceNotFoundException;
 import com.saswat.lovable.repository.PlanRepository;
 import com.saswat.lovable.repository.UserRepository;
-import com.saswat.lovable.security.UserContext;
+import com.saswat.lovable.security.AuthUtil;
 import com.saswat.lovable.service.PaymentProcessor;
 import com.saswat.lovable.service.SubscriptionService;
 import com.stripe.exception.StripeException;
@@ -30,7 +30,7 @@ import java.util.Map;
 @RequiredArgsConstructor
 public class StripePaymentProcessorImpl implements PaymentProcessor {
 
-    private final UserContext userContext;
+    private final AuthUtil authUtil;
     private final PlanRepository planRepository;
     private final UserRepository userRepository;
     private final SubscriptionService subscriptionService;
@@ -44,7 +44,7 @@ public class StripePaymentProcessorImpl implements PaymentProcessor {
         Plan plan = planRepository.findById(request.planId()).orElseThrow(() ->
                 new ResourceNotFoundException("Plan", request.planId().toString()));
 
-        User user = userRepository.findById(userContext.getUserId()).orElseThrow(() ->
+        User user = userRepository.findById(authUtil.getCurrentUserId()).orElseThrow(() ->
                 new ResourceNotFoundException("Plan", request.planId().toString()));
 
         var params = SessionCreateParams.builder()
@@ -60,7 +60,7 @@ public class StripePaymentProcessorImpl implements PaymentProcessor {
                 )
                 .setSuccessUrl(frontendUrl + "/success.html?session_id={CHECKOUT_SESSION_ID}")
                 .setCancelUrl(frontendUrl + "/cancel.html")
-                .putMetadata("user_id", userContext.getUserId().toString())
+                .putMetadata("user_id", authUtil.getCurrentUserId().toString())
                 .putMetadata("plan_id", plan.getId().toString());
 
 
@@ -81,11 +81,11 @@ public class StripePaymentProcessorImpl implements PaymentProcessor {
 
     @Override
     public PortalResponse openCustomerPortal() {
-        User user = getUser(userContext.getUserId());
+        User user = getUser(authUtil.getCurrentUserId());
         String stripeCustomerId = user.getStripeCustomerId();
 
         if (stripeCustomerId == null || stripeCustomerId.isEmpty()) {
-            throw new BadRequestException("User does not have a stripe customer ID, UserId" + userContext.getUserId());
+            throw new BadRequestException("User does not have a stripe customer ID, UserId" + authUtil.getCurrentUserId());
 
         }
 

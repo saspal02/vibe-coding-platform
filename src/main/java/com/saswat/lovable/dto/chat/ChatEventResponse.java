@@ -1,10 +1,10 @@
 package com.saswat.lovable.dto.chat;
 
-import com.saswat.lovable.enums.ChatEventType;
+import java.util.List;
 
 public record ChatEventResponse(
         Long id,
-        ChatEventType type,
+        List<ChatEventResponse> events,
         Integer sequenceOrder,
         String content,
         String filePath,

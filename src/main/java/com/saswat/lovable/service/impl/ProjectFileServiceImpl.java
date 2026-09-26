@@ -2,6 +2,7 @@ package com.saswat.lovable.service.impl;
 
 import com.saswat.lovable.dto.project.FileContentResponse;
 import com.saswat.lovable.dto.project.FileNode;
+import com.saswat.lovable.dto.project.FileTreeResponse;
 import com.saswat.lovable.entity.Project;
 import com.saswat.lovable.entity.ProjectFile;
 import com.saswat.lovable.exception.ResourceNotFoundException;
@@ -40,9 +41,10 @@ public class ProjectFileServiceImpl implements ProjectFileService {
     private String projectBucket;
 
     @Override
-    public List<FileNode> getFileTree(Long projectId) {
+    public FileTreeResponse getFileTree(Long projectId) {
         List<ProjectFile> projectFileList = projectFileRepository.findByProjectId(projectId);
-        return projectFileMapper.toListOfFileNode(projectFileList);
+        List<FileNode> projectFileNodes = projectFileMapper.toListOfFileNode(projectFileList);
+        return new FileTreeResponse(projectFileNodes);
     }
 
 
